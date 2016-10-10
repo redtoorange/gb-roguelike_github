@@ -79,13 +79,13 @@ abstract public class Character implements Disposable {
         int toHitRoll = Dice.D20.roll();
 
         if (toHitRoll > target.getArmorClass()) {
-            Gdx.app.log(name, "Hit " + target.getName() + " with a " + toHitRoll + "!");
+            Gdx.app.debug(name, "Hit " + target.getName() + " with a " + toHitRoll + "!");
             dealDamage(target);
             return true;
         }
 
         missSound.play();
-        Gdx.app.log(name, toHitRoll + " not enought to beat AC" + target.getArmorClass());
+        Gdx.app.debug(name, toHitRoll + " not enought to beat AC" + target.getArmorClass());
         return false;
     }
 
@@ -93,7 +93,7 @@ abstract public class Character implements Disposable {
         int amount = attackDamage.roll();
         attackSound.play(amount / attackDamage.maxDamage());
 
-        Gdx.app.log(getName(), target.getName() + " was hit for " + amount + " damage.");
+        Gdx.app.debug(getName(), target.getName() + " was hit for " + amount + " damage.");
         target.takeDamage(amount);
     }
 
