@@ -11,8 +11,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.redtoorange.delver.entities.Character;
 import com.redtoorange.delver.entities.Monster;
+import com.redtoorange.delver.utility.Draws;
 import com.redtoorange.delver.utility.ChanceRange;
 import com.redtoorange.delver.utility.TileType;
+import com.redtoorange.delver.utility.Updates;
 import com.redtoorange.delver.utility.pathFinding.Node;
 import com.redtoorange.delver.utility.pathFinding.Tree;
 
@@ -21,7 +23,12 @@ import java.util.Hashtable;
 public class Map implements Disposable{
     public boolean showHealth = false;
     public Tree pathingTree;
+
     private Array<Character> characters;
+
+    private Array<Draws> drawables;
+    private Array<Updates> updateables;
+
     private ChanceRange sandChance = new ChanceRange(0.1f, 0.3f);
     private ChanceRange dirtChance = new ChanceRange(0.3f, 0.6f);
     private ChanceRange grassChance = new ChanceRange(0.6f, 1f);
@@ -57,7 +64,10 @@ public class Map implements Disposable{
         this.tileDrawHeight = tileDrawHeight;
 
         this.tileSet = new Texture( tileSet );
-        characters = new Array<Character>();
+
+        characters  = new Array<Character>();
+        updateables = new Array<Updates>(  );
+        drawables   = new Array<Draws>(  );
 
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
@@ -76,17 +86,18 @@ public class Map implements Disposable{
 
 
 
-    public void updateCharacters(){
-        for (Character c : characters)
-        {
-            c.update();
+    public void updateables(){
+
+        float deltaTime = Gdx.graphics.getDeltaTime();
+
+        for (Updates u : updateables)  {
+            u.update(deltaTime);
         }
     }
 
-    public void drawCharacters(SpriteBatch batch){
-        for (int i = characters.size - 1; i >= 0; i--)
-        {
-            characters.get(i).draw(batch);
+    public void drawables( SpriteBatch batch){
+        for (int i = drawables.size - 1; i >= 0; i--)   {
+            drawables.get(i).draw(batch);
         }
     }
 
@@ -206,19 +217,26 @@ public class Map implements Disposable{
         }
     }
 
-    public void addCharacter(Character c)
-    {
-        characters.add(c);
+    public <E> void addEntity( E c)   {
+        if(c instanceof Draws )
+            drawables.add( (Draws) c );
+
+        if(c instanceof Updates )
+            updateables.add((Updates) c);
+
+        if(c instanceof Character )
+            characters.add( (Character) c);
     }
 
-    public void removeCharacter(Character c)
-    {
+    public void removeCharacter(Character c)    {
         characters.removeValue(c, true);
+        drawables.removeValue(c, true);
+        updateables.removeValue(c, true);
+
         c.dispose();
     }
 
-    public Character getCharacterAt(int i)
-    {
+    public Character getCharacterAt(int i)    {
         return characters.get(i);
     }
 
@@ -233,8 +251,25 @@ public class Map implements Disposable{
     }
 
     @Override
-    public void dispose()
-    {
+    public void dispose()    {
+        for(Character c : characters){
+            c.dispose();
+        }
+
+        for(Updates u : updateables){
+            if(u == null) continue;
+
+            if(u.getClass().isInstance( Disposable.class ))
+                ((Disposable)u).dispose();
+        }
+
+        for(Draws d : drawables){
+            if(d == null) continue;
+
+            if(d.getClass().isInstance( Disposable.class ))
+                ((Disposable)d).dispose();
+        }
+
         tileSet.dispose();
     }
 
@@ -247,4 +282,6 @@ public class Map implements Disposable{
     {
         return tileHeight;
     }
+
+
 }

@@ -13,7 +13,7 @@ public class Dice {
     private int sides;
     private int count;
 
-    public float maxDamage(){
+    public int maxDamage(){
         return sides * count;
     }
 

@@ -19,6 +19,7 @@ public class Monster extends Character implements Disposable {
                             // 1 = act every-other turn
     private int currentAction;
     private Player target;
+    private Path currentPath;
 
     public Monster(Dice hitPointDie, Dice attackDie, String name, TextureRegion tr, float scale, float x, float y, Map map) {
         super(name, tr, scale, x, y, map);
@@ -34,14 +35,16 @@ public class Monster extends Character implements Disposable {
 
     @Override
     protected void handleInput() {
-        if(target == null)
-            return;
+        if(target == null) return;
 
-        Path p = currentMap.pathingTree.aStarSearch( currentTile, target.currentTile );
-        Tile nextTile = p.getNext();
+        currentPath = currentMap.pathingTree.aStarSearch( currentTile, target.currentTile );
+
+        if(currentPath == null) return;
+
+        Tile nextTile = currentPath.getNext();
 
         if(debugPath)
-            drawDebugPath(p);
+            drawDebugPath(currentPath);
 
         if(nextTile == target.currentTile)
             attack( target );
@@ -50,6 +53,8 @@ public class Monster extends Character implements Disposable {
     }
 
     private void drawDebugPath(Path p) {
+        if(currentPath == null) return;
+
         currentMap.clearFlags( );
         for(Node n : p.nodePath)
             n.tile.flag(true);
@@ -70,10 +75,13 @@ public class Monster extends Character implements Disposable {
     public void setReady(){
         canTick = true;
     }
+
     @Override
-    public void update() {
+    public void update(float deltaTime) {
+        if(currentMap == null) return;
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
-            if(debugPath){
+            if(debugPath && !dying){
                 currentMap.clearFlags();
                 debugPath = false;
             }
@@ -81,13 +89,13 @@ public class Monster extends Character implements Disposable {
                 debugPath = true;
         }
 
-        if (!canTick)
+        if (!canTick || dying)
             return;
 
         if (currentAction > 0) {
             currentAction--;
         } else {
-            super.update();
+            super.update(deltaTime);
             currentAction = MathUtils.random(0, speed);
         }
         canTick = false;

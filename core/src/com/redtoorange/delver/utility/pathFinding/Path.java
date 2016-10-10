@@ -7,10 +7,10 @@ public class Path{
     public Array<Tile> tilePath = new Array<Tile>(  );
     public Array<Node> nodePath = new Array<Node>(  );
 
-    public Path(Array<Node> path){
-        nodePath = path;
+    public Path(Array<Node> nodePath){
+        this.nodePath = nodePath;
 
-        for(Node n : nodePath){
+        for(Node n : this.nodePath ){
             tilePath.add( n.tile );
         }
     }

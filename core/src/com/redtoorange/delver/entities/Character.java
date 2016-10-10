@@ -8,41 +8,53 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import com.redtoorange.delver.utility.Dice;
+import com.redtoorange.delver.utility.Draws;
+import com.redtoorange.delver.utility.*;
 import com.redtoorange.delver.Map;
 import com.redtoorange.delver.Tile;
-import com.redtoorange.delver.utility.FloatingText;
 
-abstract public class Character implements Disposable {
-    protected String sliceSoundFile = "sounds/Slice.wav";
-    protected String missSoundFile = "sounds/Miss.wav";
-    protected FloatingText healthBar;
+abstract public class Character implements Disposable, Draws, Updates {
+    //xxxx Disposal Needed xxxx
     protected Sound attackSound;
     protected Sound missSound;
-    protected String name;
-    protected int maxHitPoints;
-    protected int hitPoints = 10;
-    protected int armorClass = 10;
-    protected Dice attackDamage = Dice.D4;
-    protected boolean canMove;
+    protected FloatingText healthBar;
+    //xxxxxxxxxxxxxxxxxxxxxxxxx
+
     protected Sprite sprite;
-    protected float positionX;
-    protected float positionY;
     protected Tile currentTile;
     protected Map currentMap;
+    protected StatBlock characterStats;
+
+    protected String sliceSoundFile = "sounds/Slice.wav";
+    protected String missSoundFile  = "sounds/Miss.wav";
+    protected String name;
+
+    protected int maxHitPoints;
+    protected int hitPoints;
+    protected int level = 1;
+
+    protected Dice hitDie = Dice.D8;
+    protected Dice attackDamage = Dice.D4;
+
+    protected float positionX;
+    protected float positionY;
     protected float scale = 1.0f;
 
+    protected boolean canMove = true;
+    protected boolean dying = false;
+
     public Character(String name, TextureRegion tr, float scale, float positionX, float positionY, Map map) {
+        characterStats = new StatBlock(  );
+
         attackSound = Gdx.audio.newSound(Gdx.files.internal(sliceSoundFile));
-        missSound = Gdx.audio.newSound(Gdx.files.internal(missSoundFile));
+        missSound   = Gdx.audio.newSound(Gdx.files.internal(missSoundFile));
 
-        this.name = name;
-        this.scale = scale;
-
+        this.name   = name;
+        this.scale  = scale;
         this.positionX = positionX;
         this.positionY = positionY;
 
-        currentMap = map;
+        currentMap  = map;
         currentTile = map.getTile(MathUtils.round(positionX), MathUtils.round(positionY));
         currentTile.setOccupier(this);
 
@@ -50,17 +62,42 @@ abstract public class Character implements Disposable {
         sprite.setSize(scale, scale);
         sprite.setPosition(positionX, positionY);
 
-        canMove = true;
-        maxHitPoints = hitPoints;
+        initHealth( );
+    }
 
-        healthBar = new FloatingText(false);
+    //Can be called by child to update hitpoints
+    //int[] hitDice = int[20];  //Populate with each hitdie when rolled
+    protected void initHealth() {
+        if(level == 1)
+            hitPoints = hitDie.maxDamage();
+        else
+            hitPoints = hitDie.roll();
+
+        hitPoints       += characterStats.getBonus( AbilityScore.Type.CON ) * level;
+        maxHitPoints    = hitPoints;
+
+        if(healthBar == null)
+            healthBar = new FloatingText(false);
+
         updateHealthBar();
     }
 
-    public void update() {
+    protected abstract void handleInput();
+
+    //Called via Map only when allowed to move
+    public void update(float deltaTime) {
         handleInput();
         updateSprite();
-        updateHealthBar();
+    }
+
+    //Called via Engine every Frame (via map reference)
+    public void draw(SpriteBatch batch) {
+        sprite.draw(batch);
+
+        if(currentMap.showHealth){
+            updateHealthBar();
+            healthBar.draw(batch);
+        }
     }
 
     protected void updateHealthBar() {
@@ -68,32 +105,22 @@ abstract public class Character implements Disposable {
         healthBar.setLocation(new Vector2(positionX + sprite.getWidth() / 2.0f, positionY + sprite.getHeight() / 2.0f));
     }
 
-    public void draw(SpriteBatch batch) {
-        sprite.draw(batch);
 
-        if(currentMap.showHealth)
-            healthBar.draw(batch);
-    }
-
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Combat Shit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public boolean attack(Character target) {
-        int toHitRoll = Dice.D20.roll();
-
-        if (toHitRoll > target.getArmorClass()) {
-            Gdx.app.debug(name, "Hit " + target.getName() + " with a " + toHitRoll + "!");
+        if (Dice.D20.roll() > target.getArmorClass()) {
             dealDamage(target);
             return true;
         }
 
         missSound.play();
-        Gdx.app.debug(name, toHitRoll + " not enought to beat AC" + target.getArmorClass());
         return false;
     }
 
     public void dealDamage(Character target) {
-        int amount = attackDamage.roll();
-        attackSound.play(amount / attackDamage.maxDamage());
+        int amount = attackDamage.roll() + characterStats.getBonus( AbilityScore.Type.STR );
+        attackSound.play(amount / (float)attackDamage.maxDamage());
 
-        Gdx.app.debug(getName(), target.getName() + " was hit for " + amount + " damage.");
         target.takeDamage(amount);
     }
 
@@ -102,9 +129,13 @@ abstract public class Character implements Disposable {
         updateHealthBar();
 
         if (hitPoints <= 0) {
-            hitPoints = 0;
-            die();
+            dying = true;
+            die( );  //Will call dispose
         }
+    }
+
+    public int getArmorClass() {
+        return Constants.BASE_ARMOR + characterStats.getBonus( AbilityScore.Type.DEX ); // + Armor or something...
     }
 
     public void heal(int amount) {
@@ -121,10 +152,15 @@ abstract public class Character implements Disposable {
         currentTile.setOccupier(null);
         currentMap.removeCharacter(this);
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+
+    //Clean-up
     @Override
     public void dispose() {
         attackSound.dispose();
+        missSound.dispose();
+        healthBar.dispose();
     }
 
     public Tile getCurrentTile() {
@@ -147,15 +183,9 @@ abstract public class Character implements Disposable {
         return positionY;
     }
 
-    public int getArmorClass() {
-        return armorClass;
-    }
-
     protected boolean spaceOpen(Tile target) {
         return target.isPassable();
     }
-
-    protected abstract void handleInput();
 
     public abstract void move(int deltaX, int deltaY);
 

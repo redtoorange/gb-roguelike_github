@@ -10,46 +10,76 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.redtoorange.delver.Map;
 import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.AbilityScore;
 import com.redtoorange.delver.utility.Dice;
 import com.redtoorange.delver.utility.FloatingText;
 
-public class Player extends Character
-{
+public class Player extends Character   {
+    // xxxxxxxxx Disposal Needed xxx
     private Sound bumpSound;
     private Music deathMusic;
     private FloatingText combatText;
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    private boolean dying = false;
     private boolean monstersShouldTick;
     private float delay = .25f;
     private float timeElapsed = 0.f;
+    private String bumpSoundFile = "sounds/Blip.wav";
+    private String deathMusicFile = "sounds/Death.wav";
 
     public Player(TextureRegion tr, float scale, float x, float y, Map map){
         super("Player", tr, scale, x, y, map);
-        bumpSound = Gdx.audio.newSound(Gdx.files.internal("sounds/Blip.wav"));
-        deathMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Death.wav"));
+
+        bumpSound = Gdx.audio.newSound(Gdx.files.internal(bumpSoundFile));
+        deathMusic = Gdx.audio.newMusic(Gdx.files.internal(deathMusicFile));
+
         deathMusic.setLooping(false);
 
         combatText = new FloatingText(true);
+
+        hitDie = Dice.D4;
         attackDamage = Dice.D12;
 
-        hitPoints = 20;
-        maxHitPoints = hitPoints;
-        updateHealthBar();
+        characterStats.getAbilityScore( AbilityScore.Type.CON ).setValue( 18 );
+
+        initHealth();
     }
 
-    //@override
-    public void update()
+    @Override
+    protected void handleInput()
     {
-        if (!monstersShouldTick)
-        {
-            super.update();
+        if (Gdx.input.isKeyPressed(Input.Keys.W))   {
+            move(0, 1);
+        }
+        else if (Gdx.input.isKeyPressed(Input.Keys.S))  {
+            move(0, -1);
+        }
+        else if (Gdx.input.isKeyPressed(Input.Keys.D))    {
+            move(1, 0);
+        }
+        else if (Gdx.input.isKeyPressed(Input.Keys.A))    {
+            move(-1, 0);
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))    {
+            passTurn();
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.H))    {
+            heal(5);
+            passTurn();
+        }
+    }
+
+    @Override
+    public void update(float deltaTime)    {
+        if (!monstersShouldTick)    {
+            super.update(deltaTime);
             combatText.update();
         }
 
-        if (monstersShouldTick)
-        {
-            timeElapsed += Gdx.graphics.getDeltaTime();
-            if (timeElapsed >= delay)
-            {
+        if (monstersShouldTick) {
+            timeElapsed += deltaTime;
+            if (timeElapsed >= delay)   {
                 currentMap.tickMonsters();
                 monstersShouldTick = false;
                 timeElapsed = 0;
@@ -60,28 +90,10 @@ public class Player extends Character
             super.die();
     }
 
-    protected void handleInput()
-    {
-        if (Gdx.input.isKeyPressed(Input.Keys.W))
-        {
-            move(0, 1);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S))
-        {
-            move(0, -1);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D))
-        {
-            move(1, 0);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A))
-        {
-            move(-1, 0);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
-        {
-            passTurn();
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.H))
-        {
-            heal(5);
-            passTurn();
-        }
+    @Override
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
+        combatText.draw(batch);
     }
 
     private void passTurn()
@@ -94,64 +106,52 @@ public class Player extends Character
         int targetY = MathUtils.round(positionY + (deltaY * scale));
         Tile targetTile = currentMap.getTile(targetX, targetY);
 
-        if (ableToMove() && spaceOpen(targetTile))
-        {
+        if (ableToMove() && spaceOpen(targetTile))  {
             completeMove(targetTile, targetX, targetY);
-        } else if (ableToMove() && targetTile.occupied())
-        {
+        }
+        else if (ableToMove() && targetTile.occupied()) {
             Character monster = targetTile.getOccupier();
-            if (monster.getClass().equals(Monster.class))
-            {
+
+            if (monster.getClass().equals(Monster.class))   {
                 if (attack(monster))
                     combatText.setText("HIT!");
                 else
                     combatText.setText("MISS!");
+
                 combatText.setLocation(new Vector2(targetX, targetY));
                 combatText.play(.25f);
             }
-        } else
-        {
+        }
+        else    {
             bumpSound.play();
 
             combatText.setLocation(new Vector2(targetX, targetY));
             combatText.setText("Blocked!");
             combatText.play(.25f);
         }
-        monstersShouldTick = true;
 
+        monstersShouldTick = true;
     }
 
-    private void completeMove(Tile target, int targetX, int targetY)
-    {
+    private void completeMove(Tile target, int targetX, int targetY)    {
         currentTile.setOccupier(null);
-
         currentTile = target;
         currentTile.setOccupier(this);
+
         positionX = targetX;
         positionY = targetY;
     }
 
     @Override
-    public void draw(SpriteBatch batch)
-    {
-        super.draw(batch);
-        combatText.draw(batch);
-    }
-
-    @Override
-    public void dispose()
-    {
+    public void dispose()   {
         super.dispose();
         combatText.dispose();
         bumpSound.dispose();
         deathMusic.dispose();
     }
 
-    private boolean dying = false;
-
     @Override
-    public void die()
-    {
+    public void die()   {
         deathMusic.play();
         dying = true;
     }

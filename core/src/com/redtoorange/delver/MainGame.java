@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.redtoorange.delver.entities.Monster;
 import com.redtoorange.delver.entities.Player;
+import com.redtoorange.delver.entities.inventory.ItemSheet;
+import com.redtoorange.delver.entities.inventory.Sword;
 import com.redtoorange.delver.factories.MonsterFactory;
 import com.redtoorange.delver.utility.Constants;
 
@@ -29,14 +31,13 @@ public class MainGame extends ApplicationAdapter{
     private Map map;
     private InputManager input;
 
-    public void create()
-    {
+    public void create()    {
         input = new InputManager(this);
         Gdx.input.setInputProcessor(input);
 
         camera = new OrthographicCamera();
 
-        //Regardless of the resolition of the window, force it to fit this...
+        //Regardless of the resolution of the window, force it to fit this...
         viewport = new FitViewport(Constants.GB_RES_WIDTH, Constants.GB_RES_HEIGHT, camera);
 
 
@@ -49,7 +50,32 @@ public class MainGame extends ApplicationAdapter{
         player = new Player(texReg, 16, spawn.getWorldPositionX(), spawn.getWorldPositionY(), map);
 
 
-        map.addCharacter(player);
+        map.addEntity(player);
+        spawnBaddies(5);    //Ask factories for stuff
+
+        Tile itemLocation = map.getRandomEmptyTile();
+
+        Sword s = new Sword( ItemSheet.Sword.name, 1.0F, ItemSheet.Sword.getTextureRegion(),
+                itemLocation.getWorldPositionX(), itemLocation.getWorldPositionY(),
+                16, itemLocation);
+
+
+        map.addEntity( s );
+
+    }
+
+    public void reset() {
+        player.dispose();
+        map.dispose();
+
+
+        map = new Map(Gdx.files.internal(tileSet), 20, 20, 0, 0, 32, 32, 16, 16);
+
+        TextureRegion texReg = new TextureRegion(new Texture(Gdx.files.internal(tileSet)), 64, 576, 32, 32);
+        Tile spawn = map.getRandomEmptyTile();
+
+        player = new Player(texReg, 16, spawn.getWorldPositionX(), spawn.getWorldPositionY(), map);
+        map.addEntity(player);
         spawnBaddies(1);    //Ask factories for stuff
     }
 
@@ -57,20 +83,18 @@ public class MainGame extends ApplicationAdapter{
         viewport.update( width, height );
     }
 
-    private void spawnBaddies(int count)
-    {
+    private void spawnBaddies(int count)    {
         for (int i = 0; i < count; i++)
         {
             Tile t = map.getRandomEmptyTile();
             Monster m = MonsterFactory.buildZombie(map, t);
             t.setOccupier(m);
-            map.addCharacter(m);
+            map.addEntity(m);
         }
     }
 
     //Place holder, does nothing
-    public void mouseClicked(int x, int y)
-    {
+    public void mouseClicked(int x, int y)  {
         Vector3 clickPos = new Vector3(x, y, 0);
         clickPos = camera.unproject(clickPos);
 
@@ -85,39 +109,46 @@ public class MainGame extends ApplicationAdapter{
         draw();
     }
 
-    private void update()
-    {
+    private void update()   {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
             Gdx.app.exit();
 
-        map.updateCharacters();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_RIGHT))
+            reset();
 
-        camera.position.set(player.getPositionX(), player.getPositionY(), 0);
+        if(map != null)
+            map.updateables();
+
+        if(camera != null && player != null)
+            camera.position.set(player.getPositionX(), player.getPositionY(), 0);
     }
 
-    private void draw()
-    {
+    private void draw() {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
 
-        map.drawMap(batch);
-        map.drawCharacters(batch);
+        if(map != null){
+            map.drawMap(batch);
+            map.drawables(batch);
+        }
 
         batch.end();
     }
 
-    private void clearScreen()
-    {
+    private void clearScreen()  {
         Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
-    public void dispose()
-    {
-        player.dispose();
-        map.dispose();
+    public void dispose()   {
+        if(player != null)
+            player.dispose();
+
+        if(map != null)
+            map.dispose();
+
         batch.dispose();
     }
 }
