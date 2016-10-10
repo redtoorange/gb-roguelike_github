@@ -45,8 +45,8 @@ public class MainGame extends ApplicationAdapter{
 
         TextureRegion texReg = new TextureRegion(new Texture(Gdx.files.internal(tileSet)), 64, 576, 32, 32);
 
-
-        player = new Player(texReg, 16, 32, 32, map);
+        Tile spawn = map.getRandomEmptyTile();
+        player = new Player(texReg, 16, spawn.getWorldPositionX(), spawn.getWorldPositionY(), map);
 
 
         map.addCharacter(player);

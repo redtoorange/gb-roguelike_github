@@ -22,8 +22,7 @@ public class Player extends Character
     private float delay = .25f;
     private float timeElapsed = 0.f;
 
-    public Player(TextureRegion tr, float scale, float x, float y, Map map)
-    {
+    public Player(TextureRegion tr, float scale, float x, float y, Map map){
         super("Player", tr, scale, x, y, map);
         bumpSound = Gdx.audio.newSound(Gdx.files.internal("sounds/Blip.wav"));
         deathMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Death.wav"));
