@@ -22,6 +22,10 @@ public class Dice {
         this.count = count;
     }
 
+    public String toString(){
+        return count + "D" + sides;
+    }
+
     public int roll(){
         return MathUtils.random(count, count * sides);
     }

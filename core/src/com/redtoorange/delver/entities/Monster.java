@@ -23,7 +23,7 @@ public class Monster extends Character implements Disposable {
 
     public Monster(Dice hitPointDie, Dice attackDie, String name, TextureRegion tr, float scale, float x, float y, Map map) {
         super(name, tr, scale, x, y, map);
-        attackDamage = attackDie;
+        setAttackDamage( attackDie );
 
         hitPoints = hitPointDie.roll();
         maxHitPoints = hitPoints;

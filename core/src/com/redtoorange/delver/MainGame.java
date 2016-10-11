@@ -19,6 +19,7 @@ import com.redtoorange.delver.entities.inventory.ItemSheet;
 import com.redtoorange.delver.entities.inventory.Sword;
 import com.redtoorange.delver.factories.MonsterFactory;
 import com.redtoorange.delver.utility.Constants;
+import com.redtoorange.delver.utility.Dice;
 
 public class MainGame extends ApplicationAdapter{
     private Player player;
@@ -55,13 +56,12 @@ public class MainGame extends ApplicationAdapter{
 
         Tile itemLocation = map.getRandomEmptyTile();
 
-        Sword s = new Sword( ItemSheet.Sword.name, 1.0F, ItemSheet.Sword.getTextureRegion(),
+        Sword s = new Sword( ItemSheet.Sword.name, Dice.D8, 1.0F, ItemSheet.Sword.getTextureRegion(),
                 itemLocation.getWorldPositionX(), itemLocation.getWorldPositionY(),
-                16, itemLocation);
+                16.f/32.f, itemLocation);
 
 
         map.addEntity( s );
-
     }
 
     public void reset() {
@@ -100,6 +100,8 @@ public class MainGame extends ApplicationAdapter{
 
         x = MathUtils.round(clickPos.x);
         y = MathUtils.round(clickPos.y);
+
+        Gdx.app.log( "", "Mouse Clicked: " + x + ", " + y );
     }
 
     public void render()

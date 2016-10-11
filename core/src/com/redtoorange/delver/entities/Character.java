@@ -35,6 +35,7 @@ abstract public class Character implements Disposable, Draws, Updates {
 
     protected Dice hitDie = Dice.D8;
     protected Dice attackDamage = Dice.D4;
+    protected Dice defaultAttackDie = Dice.D4;
 
     protected float positionX;
     protected float positionY;
@@ -118,8 +119,8 @@ abstract public class Character implements Disposable, Draws, Updates {
     }
 
     public void dealDamage(Character target) {
-        int amount = attackDamage.roll() + characterStats.getBonus( AbilityScore.Type.STR );
-        attackSound.play(amount / (float)attackDamage.maxDamage());
+        int amount = getAttackDamage( ).roll() + characterStats.getBonus( AbilityScore.Type.STR );
+        attackSound.play(amount / (float) getAttackDamage( ).maxDamage());
 
         target.takeDamage(amount);
     }
@@ -195,5 +196,21 @@ abstract public class Character implements Disposable, Draws, Updates {
 
     protected void updateSprite() {
         sprite.setPosition(positionX, positionY);
+    }
+
+    public Dice getAttackDamage() {
+        return attackDamage;
+    }
+
+    public void setAttackDamage( Dice attackDamage ) {
+        this.attackDamage = attackDamage;
+    }
+
+    public Dice getDefaultAttackDie() {
+        return defaultAttackDie;
+    }
+
+    public void setDefaultAttackDie( Dice defaultAttackDie ) {
+        this.defaultAttackDie = defaultAttackDie;
     }
 }

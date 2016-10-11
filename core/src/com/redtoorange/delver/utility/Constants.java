@@ -9,4 +9,5 @@ public class Constants {
     public static final int GB_RES_HEIGHT = 144;
 
     public static final int BASE_ARMOR = 10;
+    public static final int MAX_ITEMS_IN_TILE = 3;
 }

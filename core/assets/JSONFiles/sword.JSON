@@ -1,0 +1,8 @@
+{
+  "type" : "sword",
+  "name": "Sword",
+  "damageDice": "1D8",
+  "weight": "2.0F",
+  "scale": "16/32",
+  "texture": "swordTexture"
+}

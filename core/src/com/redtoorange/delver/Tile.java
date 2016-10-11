@@ -3,10 +3,16 @@ package com.redtoorange.delver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.redtoorange.delver.entities.Character;
+import com.redtoorange.delver.entities.inventory.Item;
+import com.redtoorange.delver.utility.Constants;
 import com.redtoorange.delver.utility.TileType;
 
 public class Tile{
+    private int itemsPresent;
+    private Array<Item> items;
+
     private Character occupier;
     private int worldPositionX, worldPositionY;
     private boolean flagged = false;
@@ -28,6 +34,27 @@ public class Tile{
 
         this.drawWidth = drawWidth;
         this.drawHeight = drawHeight;
+
+        items = new Array<Item>( );
+        itemsPresent = 0;
+    }
+
+    public boolean hasRoom(){
+        return items.size < Constants.MAX_ITEMS_IN_TILE;
+    }
+
+    public boolean addItem(Item i){
+        items.add( i );
+        i.setTile( this );
+
+        return true;
+    }
+
+    public Item removeItem(){
+        Item i = items.pop();
+        items.shrink();
+
+        return i;
     }
 
     public void draw(SpriteBatch batch){
@@ -40,7 +67,6 @@ public class Tile{
 
         if (flagged)
             batch.setColor(bColor);
-
     }
 
     public String toString(){
@@ -52,6 +78,10 @@ public class Tile{
 
         s += ": " + type.toString() + " At " + worldPositionX + ", " + worldPositionY;
         return s;
+    }
+
+    public boolean hasItems(){
+        return (items.size > 0);
     }
 
     public void setOccupier(Character c){

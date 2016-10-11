@@ -16,14 +16,34 @@ public class Inventory {
 	}
 
 	public void addItem(Item i){
-		currentWeight += i.weight;
+		currentWeight += i.getWeight();
 		items.add( i );
+		i.setVisible( false );
+
+
+		if(i instanceof Equipable){
+			( (Equipable) i ).equip(owner);
+		}
 	}
 
 	public void removeItem(Item i){
+		if(i instanceof Equipable){
+			( (Equipable) i ).unequip(owner);
+		}
+
 		currentWeight -= i.weight;
 		items.removeValue( i, true );
+		i.setVisible( true );
 	}
+
+	public Item getItem(int i){
+		if(i < 0 || i > items.size - 1)
+			return null;
+
+		return items.get( i );
+	}
+
+
 
 	private void calculateWeight(){
 		currentWeight = 0;
@@ -32,5 +52,4 @@ public class Inventory {
 			currentWeight += items.get( i ).weight;
 		}
 	}
-
 }

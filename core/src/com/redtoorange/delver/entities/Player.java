@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.redtoorange.delver.Map;
 import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.entities.inventory.Inventory;
+import com.redtoorange.delver.entities.inventory.Item;
 import com.redtoorange.delver.utility.AbilityScore;
 import com.redtoorange.delver.utility.Dice;
 import com.redtoorange.delver.utility.FloatingText;
@@ -23,25 +25,23 @@ public class Player extends Character   {
 
     private boolean dying = false;
     private boolean monstersShouldTick;
-    private float delay = .25f;
+    private float delay = .1f;
     private float timeElapsed = 0.f;
     private String bumpSoundFile = "sounds/Blip.wav";
     private String deathMusicFile = "sounds/Death.wav";
+    private Inventory inventory;
 
     public Player(TextureRegion tr, float scale, float x, float y, Map map){
         super("Player", tr, scale, x, y, map);
 
         bumpSound = Gdx.audio.newSound(Gdx.files.internal(bumpSoundFile));
         deathMusic = Gdx.audio.newMusic(Gdx.files.internal(deathMusicFile));
-
         deathMusic.setLooping(false);
 
         combatText = new FloatingText(true);
-
-        hitDie = Dice.D4;
-        attackDamage = Dice.D12;
-
+        hitDie = Dice.D12;
         characterStats.getAbilityScore( AbilityScore.Type.CON ).setValue( 18 );
+        inventory = new Inventory( this );
 
         initHealth();
     }
@@ -50,6 +50,7 @@ public class Player extends Character   {
     protected void handleInput()
     {
         if (Gdx.input.isKeyPressed(Input.Keys.W))   {
+            timeElapsed = 0;
             move(0, 1);
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.S))  {
@@ -67,6 +68,12 @@ public class Player extends Character   {
         else if (Gdx.input.isKeyJustPressed(Input.Keys.H))    {
             heal(5);
             passTurn();
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD))    {
+            attemptToPickUp();
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA))    {
+            attemptToDrop();
         }
     }
 
@@ -96,6 +103,29 @@ public class Player extends Character   {
         combatText.draw(batch);
     }
 
+    //xxxxxxxxxxxxxx Inventory Shit xxxxxxxxxxxxxxxxxxxx
+
+    private void attemptToPickUp(){
+        if(currentTile != null && currentTile.hasItems()){
+            Item i = currentTile.removeItem();
+            inventory.addItem( i );
+        }
+        Gdx.app.log( "", "Attack Die: " + attackDamage.toString() );
+    }
+
+    private void attemptToDrop(){
+        if(currentTile != null){
+            Item i = inventory.getItem( 0 );
+
+            if(i != null && currentTile.hasRoom()){
+                currentTile.addItem( i );
+                inventory.removeItem( i );
+            }
+        }
+        Gdx.app.log( "", "Attack Die: " + attackDamage.toString() );
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
     private void passTurn()
     {
         monstersShouldTick = true;
@@ -119,7 +149,7 @@ public class Player extends Character   {
                     combatText.setText("MISS!");
 
                 combatText.setLocation(new Vector2(targetX, targetY));
-                combatText.play(.25f);
+                combatText.play(.15f);
             }
         }
         else    {
@@ -127,7 +157,7 @@ public class Player extends Character   {
 
             combatText.setLocation(new Vector2(targetX, targetY));
             combatText.setText("Blocked!");
-            combatText.play(.25f);
+            combatText.play(.15f);
         }
 
         monstersShouldTick = true;
@@ -152,6 +182,7 @@ public class Player extends Character   {
 
     @Override
     public void die()   {
+        deathMusic.setVolume( 0.25F );
         deathMusic.play();
         dying = true;
     }
