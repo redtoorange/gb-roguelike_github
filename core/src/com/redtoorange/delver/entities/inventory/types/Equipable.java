@@ -1,4 +1,4 @@
-package com.redtoorange.delver.entities.inventory;
+package com.redtoorange.delver.entities.inventory.types;
 
 import com.redtoorange.delver.entities.Character;
 

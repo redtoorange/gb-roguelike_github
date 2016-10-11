@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.redtoorange.delver.entities.Character;
-import com.redtoorange.delver.entities.inventory.Item;
+import com.redtoorange.delver.entities.inventory.types.Item;
 import com.redtoorange.delver.utility.Constants;
 import com.redtoorange.delver.utility.TileType;
 
