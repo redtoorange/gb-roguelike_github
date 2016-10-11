@@ -1,4 +1,4 @@
-package com.redtoorange.delver.entities.inventory.types;
+package com.redtoorange.delver.entities.inventory;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -75,9 +75,5 @@ public abstract class Item implements Draws {
 		setY( tile.getWorldPositionY() );
 
 		sprite.setPosition( x, y );
-	}
-
-	public String getName(){
-		return name;
 	}
 }

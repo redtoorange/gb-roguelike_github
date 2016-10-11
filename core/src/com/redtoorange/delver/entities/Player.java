@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.redtoorange.delver.Map;
 import com.redtoorange.delver.Tile;
 import com.redtoorange.delver.entities.inventory.Inventory;
-import com.redtoorange.delver.entities.inventory.types.Item;
+import com.redtoorange.delver.entities.inventory.Item;
 import com.redtoorange.delver.utility.AbilityScore;
 import com.redtoorange.delver.utility.Dice;
 import com.redtoorange.delver.utility.FloatingText;
@@ -109,7 +109,6 @@ public class Player extends Character   {
         if(currentTile != null && currentTile.hasItems()){
             Item i = currentTile.removeItem();
             inventory.addItem( i );
-            Gdx.app.log( "Pickup", i.getName() );
         }
         Gdx.app.log( "", "Attack Die: " + attackDamage.toString() );
     }
@@ -121,7 +120,6 @@ public class Player extends Character   {
             if(i != null && currentTile.hasRoom()){
                 currentTile.addItem( i );
                 inventory.removeItem( i );
-                Gdx.app.log( "Dropped", i.getName() );
             }
         }
         Gdx.app.log( "", "Attack Die: " + attackDamage.toString() );

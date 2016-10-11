@@ -2,8 +2,6 @@ package com.redtoorange.delver.entities.inventory;
 
 import com.badlogic.gdx.utils.Array;
 import com.redtoorange.delver.entities.Character;
-import com.redtoorange.delver.entities.inventory.types.Equipable;
-import com.redtoorange.delver.entities.inventory.types.Item;
 
 public class Inventory {
 
@@ -23,7 +21,7 @@ public class Inventory {
 		i.setVisible( false );
 
 
-		if(i instanceof Equipable ){
+		if(i instanceof Equipable){
 			( (Equipable) i ).equip(owner);
 		}
 	}
@@ -33,7 +31,7 @@ public class Inventory {
 			( (Equipable) i ).unequip(owner);
 		}
 
-		currentWeight -= i.getWeight();
+		currentWeight -= i.weight;
 		items.removeValue( i, true );
 		i.setVisible( true );
 	}
@@ -51,7 +49,7 @@ public class Inventory {
 		currentWeight = 0;
 
 		for(int i = 0; i < items.size; i++){
-			currentWeight += items.get( i ).getWeight();
+			currentWeight += items.get( i ).weight;
 		}
 	}
 }

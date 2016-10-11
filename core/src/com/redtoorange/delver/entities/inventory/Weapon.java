@@ -1,4 +1,4 @@
-package com.redtoorange.delver.entities.inventory.types;
+package com.redtoorange.delver.entities.inventory;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

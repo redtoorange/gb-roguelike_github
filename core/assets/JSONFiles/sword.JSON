@@ -1,13 +1,8 @@
 {
-  "name": "Long Sword",
+  "type" : "sword",
+  "name": "Sword",
   "damageDice": "1D8",
-  "weight": "1.0F",
-  "scale": "0.5",
-  "TextureRegion": {
-    "x": 0,
-    "y": 224,
-    "width": 32,
-    "height": 32,
-    "Texture": "gbaTileSet.png"
-  }
+  "weight": "2.0F",
+  "scale": "16/32",
+  "texture": "swordTexture"
 }

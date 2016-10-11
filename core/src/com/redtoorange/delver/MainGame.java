@@ -15,9 +15,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.redtoorange.delver.entities.Monster;
 import com.redtoorange.delver.entities.Player;
-import com.redtoorange.delver.entities.inventory.WeaponFactory;
+import com.redtoorange.delver.entities.inventory.ItemSheet;
+import com.redtoorange.delver.entities.inventory.Sword;
 import com.redtoorange.delver.factories.MonsterFactory;
 import com.redtoorange.delver.utility.Constants;
+import com.redtoorange.delver.utility.Dice;
 
 public class MainGame extends ApplicationAdapter{
     private Player player;
@@ -50,13 +52,16 @@ public class MainGame extends ApplicationAdapter{
 
 
         map.addEntity(player);
-        spawnBaddies(1);    //Ask factories for stuff
+        spawnBaddies(5);    //Ask factories for stuff
 
         Tile itemLocation = map.getRandomEmptyTile();
-        map.addEntity( WeaponFactory.buildFromJSON("sword", itemLocation) );
 
-        itemLocation = map.getRandomEmptyTile();
-        map.addEntity( WeaponFactory.buildFromJSON("axe", itemLocation) );
+        Sword s = new Sword( ItemSheet.Sword.name, Dice.D8, 1.0F, ItemSheet.Sword.getTextureRegion(),
+                itemLocation.getWorldPositionX(), itemLocation.getWorldPositionY(),
+                16.f/32.f, itemLocation);
+
+
+        map.addEntity( s );
     }
 
     public void reset() {
