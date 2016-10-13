@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Tile;
 import com.redtoorange.delver.entities.inventory.types.Weapon;
 import com.redtoorange.delver.utility.Dice;
 

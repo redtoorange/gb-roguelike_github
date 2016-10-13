@@ -1,6 +1,6 @@
 package com.redtoorange.delver.utility.pathFinding;
 
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Tile;
 import com.badlogic.gdx.utils.Array;
 
 public class Node

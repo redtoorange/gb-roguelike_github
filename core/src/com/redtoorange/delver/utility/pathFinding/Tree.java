@@ -1,9 +1,8 @@
 package com.redtoorange.delver.utility.pathFinding;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
-import com.redtoorange.delver.Map;
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Map;
+import com.redtoorange.delver.utility.Map.Tile;
 
 import java.util.HashMap;
 

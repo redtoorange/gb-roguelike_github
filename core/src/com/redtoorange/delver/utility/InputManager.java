@@ -1,6 +1,7 @@
-package com.redtoorange.delver;
+package com.redtoorange.delver.utility;
 
 import com.badlogic.gdx.InputProcessor;
+import com.redtoorange.delver.screens.PlayingScreen;
 
 public class InputManager implements InputProcessor{
     PlayingScreen mainGame;

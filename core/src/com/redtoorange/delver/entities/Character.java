@@ -10,8 +10,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.redtoorange.delver.utility.Draws;
 import com.redtoorange.delver.utility.*;
-import com.redtoorange.delver.Map;
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Map;
+import com.redtoorange.delver.utility.Map.Tile;
 
 abstract public class Character implements Disposable, Draws, Updates {
     //xxxx Disposal Needed xxxx

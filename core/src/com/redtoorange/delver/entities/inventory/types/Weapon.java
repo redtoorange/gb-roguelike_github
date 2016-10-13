@@ -2,7 +2,7 @@ package com.redtoorange.delver.entities.inventory.types;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Tile;
 import com.redtoorange.delver.entities.Character;
 import com.redtoorange.delver.utility.Dice;
 

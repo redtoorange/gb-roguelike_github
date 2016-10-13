@@ -1,5 +1,7 @@
 package com.redtoorange.delver.utility;
 
+import com.badlogic.gdx.graphics.Color;
+
 public class Constants {
     public static final String TITLE = "Pokemon";
     public static final int WIDTH = 1920;
@@ -10,4 +12,6 @@ public class Constants {
 
     public static final int BASE_ARMOR = 10;
     public static final int MAX_ITEMS_IN_TILE = 3;
+
+    public static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
 }

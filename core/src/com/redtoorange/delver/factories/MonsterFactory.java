@@ -2,8 +2,8 @@ package com.redtoorange.delver.factories;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.redtoorange.delver.Map;
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Map;
+import com.redtoorange.delver.utility.Map.Tile;
 import com.redtoorange.delver.entities.Monster;
 import com.redtoorange.delver.utility.Dice;
 

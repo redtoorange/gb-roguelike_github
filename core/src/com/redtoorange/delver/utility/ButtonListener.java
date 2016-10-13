@@ -1,4 +1,4 @@
-package com.redtoorange.delver;
+package com.redtoorange.delver.utility;
 
 
 import com.badlogic.gdx.Gdx;

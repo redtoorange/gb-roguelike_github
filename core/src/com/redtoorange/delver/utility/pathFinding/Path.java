@@ -1,7 +1,7 @@
 package com.redtoorange.delver.utility.pathFinding;
 
 import com.badlogic.gdx.utils.Array;
-import com.redtoorange.delver.Tile;
+import com.redtoorange.delver.utility.Map.Tile;
 
 public class Path{
     public Array<Tile> tilePath = new Array<Tile>(  );

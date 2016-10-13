@@ -1,4 +1,4 @@
-package com.redtoorange.delver;
+package com.redtoorange.delver.utility.Map;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
