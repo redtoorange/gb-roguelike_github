@@ -11,8 +11,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.redtoorange.delver.entities.Character;
 import com.redtoorange.delver.entities.Monster;
-import com.redtoorange.delver.utility.Draws;
+import com.redtoorange.delver.entities.Player;
 import com.redtoorange.delver.utility.ChanceRange;
+import com.redtoorange.delver.utility.Draws;
 import com.redtoorange.delver.utility.TileType;
 import com.redtoorange.delver.utility.Updates;
 import com.redtoorange.delver.utility.pathFinding.Node;
@@ -39,6 +40,7 @@ public class Map implements Disposable{
     private int mapWidth, mapHeight;
     private int tileWidth, tileHeight;
     private float tileDrawWidth, tileDrawHeight;
+    public Player player;
 
     private Tile[][] tileMap;
     private Texture tileSet;

@@ -1,6 +1,7 @@
 {
   "name": "Long Sword",
-  "damageDice": "1D8",
+  "damageDiceCount": "1",
+  "damageDiceSides": "8",
   "weight": "1.0F",
   "scale": "0.5",
   "TextureRegion": {

@@ -45,18 +45,15 @@ public class WeaponFactory {
 
 		JsonValue value = reader.parse( Gdx.files.internal( folder + filePath.get( index ) ) );
 		TextureRegion texReg = parseTextureRegion(value.get( "TextureRegion" ));
+		Dice damageDie = parseDice( value.getInt( "damageDiceCount" ), value.getInt( "damageDiceSides" ) );
 
-		Weapon wep = new Weapon( value.getString( "name" ), parseDice( value.getString( "damageDice" ) ),
-				value.getFloat( "weight" ), texReg, tile.getWorldPositionX(), tile.getWorldPositionY(),
+		Weapon wep = new Weapon( value.getString( "name" ), damageDie, value.getFloat( "weight" ), texReg, tile.getWorldPositionX(), tile.getWorldPositionY(),
 				value.getFloat( "scale" ), tile);
 
 		return wep;
 	}
 
-	public static Dice parseDice(String dice){
-		int count = dice.charAt( 0 ) - '0';
-		int sides = dice.charAt( 2 ) - '0';
-
+	public static Dice parseDice(int count, int sides){
 		return new Dice(count, sides);
 	}
 

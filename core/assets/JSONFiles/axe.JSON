@@ -1,6 +1,7 @@
 {
   "name": "War Axe",
-  "damageDice": "1D10",
+  "damageDiceCount": "1",
+  "damageDiceSides": "10",
   "weight": "5.0F",
   "scale": "0.5",
   "TextureRegion": {

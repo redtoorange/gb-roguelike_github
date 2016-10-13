@@ -3,8 +3,8 @@ package com.redtoorange.delver;
 import com.badlogic.gdx.InputProcessor;
 
 public class InputManager implements InputProcessor{
-    MainGame mainGame;
-    public InputManager(MainGame mg){
+    PlayingScreen mainGame;
+    public InputManager(PlayingScreen mg){
         mainGame = mg;
     }
 

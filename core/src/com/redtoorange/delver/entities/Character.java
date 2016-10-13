@@ -213,4 +213,8 @@ abstract public class Character implements Disposable, Draws, Updates {
     public void setDefaultAttackDie( Dice defaultAttackDie ) {
         this.defaultAttackDie = defaultAttackDie;
     }
+
+    public int getHealth(){
+        return hitPoints;
+    }
 }
