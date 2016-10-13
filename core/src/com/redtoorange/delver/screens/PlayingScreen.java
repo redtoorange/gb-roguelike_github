@@ -28,8 +28,8 @@ import com.redtoorange.delver.utility.Map.Tile;
 
 
 public class PlayingScreen implements Screen {
+	public boolean loaded = false;
 	private MainGame game;
-
 	private Player player;
 	private String tileSet = "gbaTileSet.png";
 	private SpriteBatch batch;
@@ -46,7 +46,6 @@ public class PlayingScreen implements Screen {
 		this.game = game;
 
 		//input = new InputManager(this);
-
 		camera = new OrthographicCamera();
 
 		//Regardless of the resolution of the window, force it to fit this...
@@ -61,7 +60,7 @@ public class PlayingScreen implements Screen {
 	public void show() {
 		if(!initialized){
 			initialized = true;
-
+			loaded = true;
 			map = new Map(Gdx.files.internal(tileSet), 20, 20, 0, 0, 32, 32, 16, 16);
 
 			TextureRegion texReg = new TextureRegion(new Texture(Gdx.files.internal(tileSet)), 64, 576, 32, 32);
@@ -159,11 +158,12 @@ public class PlayingScreen implements Screen {
 	}
 
 	private void update()   {
-		if (Gdx.input.isKeyJustPressed( Input.Keys.ESCAPE))
+		if (Gdx.input.isKeyJustPressed( Input.Keys.ESCAPE)) {
 			game.setScreen(game.getScreenByType(MainGame.ScreenType.PAUSE));
-
-		if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_RIGHT))
-			reset();
+		}
+		if(Gdx.input.isKeyJustPressed(Input.Keys.I)){
+			game.setScreen(game.getScreenByType(MainGame.ScreenType.INVENTORY));
+		}
 
 		if(map != null)
 			map.updateables();
@@ -231,5 +231,9 @@ public class PlayingScreen implements Screen {
 	@Override
 	public void hide() {
 
+	}
+
+	public Player getPlayer(){
+		return player;
 	}
 }

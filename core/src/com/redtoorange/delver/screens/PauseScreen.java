@@ -4,44 +4,41 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.redtoorange.delver.MainGame;
 
 public class PauseScreen implements Screen{
-    Stage stage;
-    Skin skin;
-
-    MainGame game;
-
-    PlayingScreen playingScreen;
-    Table table;
-    TextButton quitButton;
-
+    private Stage stage;
+    private Skin skin;
+    private MainGame game;
+    private PlayingScreen playingScreen;
+    private Table table;
+    private TextButton quitButton;
     private boolean initialized = false;
+
     public PauseScreen(MainGame game){
         this.game = game;
         stage = new Stage();
         skin = new Skin(Gdx.files.internal("UI/uiskin.json"));
 
         table = new Table(skin);
-        Label label = new Label("PAUSED!", skin, "default");
-        table.add(label);
+        Label label = new Label("Paused", skin, "default");
+        label.setAlignment(Align.center);
+        table.add(label).width(75);
 
-        quitButton = new TextButton("Quit?", skin, "default");
-        quitButton.setProgrammaticChangeEvents(false);
         table.row();
-        table.add(quitButton);
+
+        quitButton = new TextButton("Main Menu", skin, "default");
+        quitButton.setProgrammaticChangeEvents(false);
+        table.add(quitButton).width(100);
 
         quitButton.addListener( new QuitButtonListener(game));
-
-
         stage.addActor(table);
     }
 
@@ -75,8 +72,6 @@ public class PauseScreen implements Screen{
 
 
         table.setPosition(x, y);
-
-        System.out.println("Button Shown");
     }
 
     @Override
