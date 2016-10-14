@@ -2,29 +2,27 @@ package com.redtoorange.delver;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.redtoorange.delver.screens.InventoryScreen;
-import com.redtoorange.delver.screens.PauseScreen;
-import com.redtoorange.delver.screens.PlayingScreen;
-import com.redtoorange.delver.screens.StartScreen;
+import com.redtoorange.delver.screens.*;
 
 public class MainGame extends Game{
-    private ArrayMap<ScreenType, Screen> screens;
+    private ArrayMap<ScreenType, GameScreen> screens;
 
     @Override
     public void create() {
-        screens = new ArrayMap<ScreenType, Screen>();
+        screens = new ArrayMap<ScreenType, GameScreen>();
 
         screens.put(ScreenType.PLAYING, new PlayingScreen( this ));
         screens.put(ScreenType.START, new StartScreen( this ));
+
+
         screens.put(ScreenType.PAUSE, new PauseScreen( this ));
         screens.put(ScreenType.INVENTORY, new InventoryScreen( this ));
 
-        setScreen( screens.get(ScreenType.START) );
+        setScreen( screens.get(ScreenType.START ) );
     }
 
-    public Screen getScreenByType(ScreenType type){
+    public GameScreen getScreenByType(ScreenType type){
         return screens.get(type);
     }
 

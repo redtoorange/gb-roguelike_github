@@ -2,32 +2,27 @@ package com.redtoorange.delver.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.redtoorange.delver.*;
+import com.redtoorange.delver.MainGame;
 import com.redtoorange.delver.entities.Monster;
 import com.redtoorange.delver.entities.Player;
 import com.redtoorange.delver.entities.inventory.WeaponFactory;
 import com.redtoorange.delver.factories.MonsterFactory;
-import com.redtoorange.delver.utility.ButtonListener;
 import com.redtoorange.delver.utility.Constants;
-import com.redtoorange.delver.utility.InputManager;
 import com.redtoorange.delver.utility.Map.Map;
 import com.redtoorange.delver.utility.Map.Tile;
 
 
-public class PlayingScreen implements Screen {
+public class PlayingScreen extends GameScreen {
 	public boolean loaded = false;
 	private MainGame game;
 	private Player player;
@@ -36,91 +31,85 @@ public class PlayingScreen implements Screen {
 	private OrthographicCamera camera;
 	private Viewport viewport;
 	private Map map;
-	private InputManager input;
-	private Stage stage;
-	private Skin skin;
-	private Table table;
+	private Table rootTable;
 	private Label hpCount;
+	private boolean initialized = false;
 
 	public PlayingScreen(MainGame game){
 		this.game = game;
 
-		//input = new InputManager(this);
 		camera = new OrthographicCamera();
-
-		//Regardless of the resolution of the window, force it to fit this...
 		viewport = new FitViewport( Constants.GB_RES_WIDTH, Constants.GB_RES_HEIGHT, camera);
-		buildUI( );
+		initUI( );
 		batch = new SpriteBatch();
 	}
 
-	private boolean initialized = false;
+	protected void initUI() {
+		super.initUI();
+		stage.setViewport( viewport );
+
+		Label hpLabel = new Label( "HP:", skin, "default" );
+		hpCount = new Label( "20", skin, "default" );
+
+
+		rootTable = new Table( skin );
+
+		rootTable.setSize( Constants.GB_RES_WIDTH, Constants.GB_RES_HEIGHT );
+		rootTable.top().left();
+
+		rootTable.setFillParent( true );
+		rootTable.setPosition( 0, 0 );
+
+		rootTable.add( hpLabel );
+		rootTable.add( hpCount );
+
+		rootTable.row();
+
+		stage.addActor( rootTable );
+	}
+
 
 	@Override
 	public void show() {
 		if(!initialized){
 			initialized = true;
-			loaded = true;
-			map = new Map(Gdx.files.internal(tileSet), 20, 20, 0, 0, 32, 32, 16, 16);
 
-			TextureRegion texReg = new TextureRegion(new Texture(Gdx.files.internal(tileSet)), 64, 576, 32, 32);
-
-			Tile spawn = map.getRandomEmptyTile();
-			player = new Player(texReg, 16, spawn.getWorldPositionX(), spawn.getWorldPositionY(), map);
-
-			map.addEntity(player);
-			spawnBaddies(1);    //Ask factories for stuff
-
-			Tile itemLocation = map.getRandomEmptyTile();
-			map.addEntity( WeaponFactory.buildFromJSON("sword", itemLocation) );
-
-			itemLocation = map.getRandomEmptyTile();
-			map.addEntity( WeaponFactory.buildFromJSON("axe", itemLocation) );
+			loadMap( );
 		}
 
 		//Stage has to be the input processor to handle input from the mouse and such
 		Gdx.input.setInputProcessor(stage);
 	}
 
+	private void loadMap() {
+		loaded = true;
+		map = new Map( Gdx.files.internal(tileSet), 20, 20, 0, 0, 32, 32, 16, 16);
+
+		TextureRegion texReg = new TextureRegion(new Texture(Gdx.files.internal(tileSet)), 64, 576, 32, 32);
+
+		Tile spawn = map.getRandomEmptyTile();
+		player = new Player(texReg, 16, spawn.getWorldPositionX(), spawn.getWorldPositionY(), map);
+
+		map.addEntity(player);
+		spawnBaddies(1);    //Ask factories for stuff
+
+		Tile itemLocation = map.getRandomEmptyTile();
+		map.addEntity( WeaponFactory.buildFromJSON("sword", itemLocation) );
+
+		itemLocation = map.getRandomEmptyTile();
+		map.addEntity( WeaponFactory.buildFromJSON("axe", itemLocation) );
+	}
+
 	@Override
 	public void render( float delta ) {
 		clearScreen();
-
 		update();
-
 		draw();
-	}
-
-	private void buildUI() {
-		//Added for Scene2D.ui
-		stage = new Stage( viewport );
-		skin = new Skin( Gdx.files.internal( "UI/uiskin.json" ) );
-
-
-		Label hpLabel = new Label( "HP:", skin, "default" );
-		hpCount = new Label( "20", skin, "default" );
-
-
-		table = new Table( skin );
-
-		table.setSize( Constants.GB_RES_WIDTH, Constants.GB_RES_HEIGHT );
-		table.top().left();
-
-		table.setFillParent( true );
-		table.setPosition( 0, 0 );
-
-		table.add( hpLabel );
-		table.add( hpCount );
-
-		table.row();
-
-		stage.addActor( table );
 	}
 
 	public void reset() {
 		player.dispose();
 		map.dispose();
-
 
 		map = new Map(Gdx.files.internal(tileSet), 20, 20, 0, 0, 32, 32, 16, 16);
 
@@ -137,8 +126,7 @@ public class PlayingScreen implements Screen {
 	}
 
 	private void spawnBaddies(int count)    {
-		for (int i = 0; i < count; i++)
-		{
+		for (int i = 0; i < count; i++)	{
 			Tile t = map.getRandomEmptyTile();
 			Monster m = MonsterFactory.buildZombie(map, t);
 			t.setOccupier(m);
@@ -171,16 +159,17 @@ public class PlayingScreen implements Screen {
 		if(camera != null && player != null)
 			camera.position.set(player.getPositionX(), player.getPositionY(), 0);
 
-		hpCount.setText( player.getHealth() + "");
-
-		table.setX( camera.position.x - camera.viewportWidth/2.f);
-		table.setY( camera.position.y - camera.viewportHeight/2.f);
-		stage.act( Gdx.graphics.getDeltaTime());
-
+		updateUI( );
 	}
 
-	public Viewport getViewport(){
-		return viewport;
+	private void updateUI() {
+		hpCount.setText( player.getHealth() + "");
+
+		rootTable.setPosition(
+				camera.position.x - camera.viewportWidth/2.f,
+				camera.position.y - camera.viewportHeight/2.f
+		);
+		stage.act( Gdx.graphics.getDeltaTime());
 	}
 
 	private void draw() {
@@ -201,12 +190,6 @@ public class PlayingScreen implements Screen {
 		stage.draw();
 	}
 
-	private void clearScreen()  {
-		Color c = Constants.CLEAR_COLOR;
-		Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
-		Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
-	}
-
 	public void dispose()   {
 		if(player != null)
 			player.dispose();
@@ -218,21 +201,9 @@ public class PlayingScreen implements Screen {
 			batch.dispose();
 	}
 
-	@Override
-	public void pause() {
-
+	public Viewport getViewport(){
+		return viewport;
 	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void hide() {
-
-	}
-
 	public Player getPlayer(){
 		return player;
 	}
