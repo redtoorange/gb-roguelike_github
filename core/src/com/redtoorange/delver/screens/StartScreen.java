@@ -2,64 +2,45 @@ package com.redtoorange.delver.screens;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.redtoorange.delver.MainGame;
-import com.redtoorange.delver.utility.Constants;
 
-public class StartScreen implements Screen {
-    private Stage stage;
-    private Skin skin;
+public class StartScreen extends GameScreen {
     private MainGame game;
     private PlayingScreen playingScreen;
-    private Table table;
+    private Table rootTable;
     private TextButton startButton;
     private TextButton exitButton;
     private boolean initialized = false;
 
     public StartScreen(MainGame game){
         this.game = game;
-        stage = new Stage();
-        skin = new Skin(Gdx.files.internal("UI/uiskin.json"));
-        table = new Table(skin);
-        stage.addActor(table);
+        initUI( );
+    }
+
+    protected void initUI( ) {
+        super.initUI();
+
+        rootTable = new Table(skin);
+        //rootTable.setSize( Constants.GB_RES_WIDTH, Constants.GB_RES_HEIGHT );
+        stage.addActor( rootTable );
+
+        rootTable.debug();
 
         startButton = new TextButton("Start", skin, "default");
         startButton.setProgrammaticChangeEvents(false);
-        startButton.addListener( new StartButtonListener(game));
-        table.add(startButton).width(80);
+        startButton.addListener( new ChangeScreenEvent(game, MainGame.ScreenType.PLAYING));
+        rootTable.add(startButton).width(80);
 
-        table.row();
+        rootTable.row();
 
         exitButton = new TextButton("Exit", skin, "default");
         exitButton.setProgrammaticChangeEvents(false);
         exitButton.addListener( new ExitButtonListener());
-        table.add(exitButton).width(80);
-    }
-
-
-    class StartButtonListener extends ChangeListener {
-        @Override
-        public void changed(ChangeEvent event, Actor actor) {
-            if(playingScreen.loaded){
-                playingScreen.reset();
-            }
-
-            game.setScreen(game.getScreenByType(MainGame.ScreenType.PLAYING));
-        }
-
-        private MainGame game;
-
-        public StartButtonListener(MainGame game){
-            this.game = game;
-        }
+        rootTable.add(exitButton).width(80);
     }
 
     class ExitButtonListener extends ChangeListener {
@@ -78,18 +59,24 @@ public class StartScreen implements Screen {
             stage.setViewport(playingScreen.getViewport());
         }
 
+        realignMainTable();
+    }
+
+    private void realignMainTable() {
         Gdx.input.setInputProcessor(stage);
 
-        float x = stage.getCamera().position.x;
-        float y = stage.getCamera().position.y;
-
-        table.setPosition(x, y);
+        rootTable.setPosition(
+                stage.getCamera().position.x,
+                stage.getCamera().position.y
+        );
     }
 
     @Override
     public void render(float delta) {
         update(delta);
         draw();
+        System.out.println( "X:" + rootTable.getX() + " Y:" + rootTable.getY() );
+        System.out.println("Mouse X:" + Gdx.input.getX() + " Y:" + Gdx.input.getY()  );
     }
 
     private void update(float delta){
@@ -99,36 +86,5 @@ public class StartScreen implements Screen {
     private void draw(){
         clearScreen();
         stage.draw();
-    }
-
-    private void clearScreen()  {
-        Color c = Constants.CLEAR_COLOR;
-        Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
-        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
     }
 }
